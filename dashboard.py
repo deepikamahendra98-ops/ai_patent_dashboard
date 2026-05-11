@@ -562,18 +562,22 @@ elif page == "🕸 NIS Radar":
 
     fig = go.Figure()
     for c in radar_countries:
-        vals = [raw[c][d] for d in dims] + [raw[c][dims[0]]]
-        fig.add_trace(go.Scatterpolar(
-            r=vals, theta=dims + [dims[0]],
-            fill="toself" if c == "IN" else "none",
-            name=COUNTRY_LABELS.get(c, c),
-            line=dict(
-                color=COUNTRY_COLORS.get(c, "#B4B2A9"),
-                width=3 if c == "IN" else 1.5
-            ),
-            fillcolor="rgba(29,158,117,0.15)" if c == "IN" else "transparent"
-        ))
-
+    vals = [raw[c][d] for d in dims] + [raw[c][dims[0]]]
+    trace_kwargs = dict(
+        r=vals,
+        theta=dims + [dims[0]],
+        fill="toself" if c == "IN" else "none",
+        name=COUNTRY_LABELS.get(c, c),
+        line=dict(
+            color=COUNTRY_COLORS.get(c, "#B4B2A9"),
+            width=3 if c == "IN" else 1.5
+        ),
+        opacity=0.85 if c == "IN" else 1.0,
+    )
+    if c == "IN":
+        trace_kwargs["fillcolor"] = "rgba(29,158,117,0.15)"
+    fig.add_trace(go.Scatterpolar(**trace_kwargs))
+    
     fig.update_layout(
         polar=dict(
             radialaxis=dict(visible=True, range=[0,1], tickfont_size=10, gridcolor="#e0e0e0"),
